@@ -1,10 +1,72 @@
 function getResult(actions) {
-  let sequence = actions.map((item) => item[0]).join("");
-  let matches = sequence.matchAll(/c*p(c*k)+(c*)p?/g);
-  return Array.from(matches).reduce(
-    (prev, curr) => prev + Math.floor(curr[2].length / 2),
-    0
-  );
+  let position = 0;
+  let clicksSum = 0;
+
+  while (position < actions.length) {
+    // click*
+    while (actions[position] === "click") {
+      position++;
+    }
+    if (position >= actions.length) {
+      break;
+    }
+
+    // power
+    if (actions[position] === "power") {
+      position++;
+    } else {
+      throw `click* power sequence should be provided, got: click* ${actions[position]}`;
+    }
+    if (position >= actions.length) {
+      break;
+    }
+
+    // click* keyboard
+    while (actions[position] === "click") {
+      position++;
+    }
+    if (position >= actions.length) {
+      break;
+    }
+    if (actions[position] === "keystrokes") {
+      position++;
+    }
+    if (position >= actions.length) {
+      break;
+    }
+    if (position >= actions.length) {
+      break;
+    }
+
+    let clicks = 0;
+    // click*
+    while (actions[position] === "click") {
+      position++;
+      clicks++;
+    }
+    if (actions[position] === "keystrokes") {
+      position++;
+      clicks = 0;
+      while (actions[position] === "click") {
+        position++;
+        clicks++;
+      }
+    }
+    clicksSum += Math.floor(clicks / 2);
+
+    if (position >= actions.length) {
+      break;
+    }
+
+    // power
+    if (actions[position] === "power") {
+      position++;
+    } else {
+      throw `click* power sequence should be provided, got: click* ${actions[position]}`;
+    }
+  }
+
+  return clicksSum;
 }
 
 let r = getResult([
@@ -25,5 +87,4 @@ let r = getResult([
   "click",
 ]);
 
-let x = 1;
 module.exports = getResult;
